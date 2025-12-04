@@ -1,15 +1,21 @@
 import { ethers } from "ethers";
 import { uploadJSONToIPFS, uploadPicToIPFS } from "../config/ipfs.js";
-import { provider } from "../config/ethers.js"; 
-import MyBlogAbi from "../../blockchain/build/contracts/MyBlogApp.json" with { type: "json" };
+import { provider } from "../config/ethers.js";
+import { createRequire } from "module";
 import dotenv from "dotenv";
 
 dotenv.config();
+
+const require = createRequire(import.meta.url);
+const MyBlogAbi = require("../../blockchain/build/contracts/MyblogApp.json");
 
 // --- Blockchain Setup ---
 let wallet, contract;
 
 if (process.env.ENV === "LOCAL") {
+  if (!process.env.PRIVATE_KEY || !process.env.CONTRACT_ADDRESS) {
+    throw new Error("Missing PRIVATE_KEY or CONTRACT_ADDRESS in .env");
+  }
   wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
   contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, MyBlogAbi.abi, wallet);
 }
@@ -19,44 +25,42 @@ export const uploadPostToIPFS = async (req, res) => {
   const { title, tags, content, author } = req.body;
 
   if (!title || !tags || !content || !author) {
-    return res.status(400).json({ message: "Title, tags, Author and content are required" });
+    return res.status(400).json({ message: "Title, tags, author, and content are required" });
   }
 
   try {
-    let imageHash = null;
+    let imageCid = null;
 
-    // If user uploaded a file, push it to IPFS first
     if (req.file) {
-      imageHash = await uploadPicToIPFS(req.file.buffer); // directly get the CID string
-      console.log("Uploaded image CID:", imageHash);
+      // Pass full file object to function
+      const imageResponse = await uploadPicToIPFS(req.file);
+      imageCid = imageResponse.cid;
+      console.log("Uploaded image CID:", imageCid);
     }
 
-    // Build metadata JSON
     const jsonData = {
       title,
       tags,
       content,
       author,
-      imageHash, // IPFS hash of the image
+      imageHash: imageCid || null,
       createdAt: new Date().toISOString(),
     };
 
-    // Upload metadata JSON to IPFS
-    const cid = await uploadJSONToIPFS(jsonData);
-    const ipfsHash = cid.toString();
+    const response = await uploadJSONToIPFS(jsonData);
+    const ipfsHash = response.cid;
 
     return res.status(200).json({
       message: "Post metadata + image uploaded to IPFS",
-      imageHash, // direct hash of the image file
-      ipfsHash,  // hash of the metadata JSON
+      imageHash: imageCid,
+      ipfsHash,
       ipfsGateway: `https://ipfs.io/ipfs/${ipfsHash}`,
     });
   } catch (error) {
     console.error("Error uploading to IPFS:", error);
-    return res.status(500).json({ message: "Error uploading to IPFS" });
+    return res.status(500).json({ message: "Error uploading to IPFS", error: error.message });
   }
 };
-
 
 // --- Store IPFS hash on blockchain (Ganache only) ---
 export const createPostOnBlockchain = async (req, res) => {
@@ -71,33 +75,40 @@ export const createPostOnBlockchain = async (req, res) => {
       return res.status(400).json({ message: "Use frontend MetaMask for testnet" });
     }
 
+    if (!contract) throw new Error("Blockchain contract not initialized");
+
     const tx = await contract.createPost(author, title, ipfsHash, { gasLimit: 3000000 });
     const receipt = await tx.wait();
 
-    // --- Fetch event from logs if receipt.events is undefined ---
-    const log = receipt.logs.find(l => l.event === "Postcreation" || l.topics[0]); // fallback
-    if (!log) {
-      console.log(receipt);
+    // Parse logs safely using Interface
+    const iface = new ethers.utils.Interface(MyBlogAbi.abi);
+    const parsedLog = receipt.logs
+      .map((log) => {
+        try {
+          return iface.parseLog(log);
+        } catch {
+          return null;
+        }
+      })
+      .find((l) => l?.name === "Postcreation");
+
+    if (!parsedLog) {
+      console.log("Raw receipt logs:", receipt.logs);
       return res.status(500).json({ message: "Postcreation event not found" });
     }
 
-    const args = log.args || log; // Ganache sometimes uses numeric keys
-    const postId = args[0].toString();
-    const _title = args[1];
-    const _author = args[2];
-    const timestamp = args[3].toString();
+    const { postId, title: _title, author: _author, timestamp } = parsedLog.args;
 
     return res.status(200).json({
       message: "Post stored on local blockchain",
       txHash: tx.hash,
-      postId,
+      postId: postId.toString(),
       title: _title,
       author: _author,
-      timestamp,
+      timestamp: timestamp.toString(),
     });
   } catch (error) {
     console.error("Error creating post on blockchain:", error);
     res.status(500).json({ message: "Error creating post on blockchain", error: error.message });
   }
 };
-

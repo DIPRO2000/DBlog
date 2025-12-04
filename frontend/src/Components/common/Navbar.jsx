@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Wallet, Home, FileText, Info } from 'lucide-react';
 import { Button } from '../../Components/ui/Button';
+import { ethers } from 'ethers';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState(null);
 
   const navLinks = [
     { name: 'Home', href: '', icon: Home },
@@ -16,8 +17,31 @@ export default function Navbar() {
     { name: 'About', href: 'About', icon: Info },
   ];
 
-  const handleWalletConnect = () => {
-    setWalletConnected(!walletConnected);
+  // ✅ Connect or Switch Wallet
+  const connectWallet = async () => {
+    try {
+      if (!window.ethereum) {
+        alert("MetaMask not detected. Please install it first.");
+        return;
+      }
+
+      // Always trigger the account selection popup
+      await window.ethereum.request({
+        method: "wallet_requestPermissions",
+        params: [{ eth_accounts: {} }],
+      });
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const accounts = await provider.send("eth_requestAccounts", []);
+      setWalletAddress(accounts[0]);
+    } catch (error) {
+      console.error("Wallet connection failed:", error);
+    }
+  };
+
+  const formatAddress = (address) => {
+    if (!address) return '';
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
   };
 
   return (
@@ -55,15 +79,15 @@ export default function Navbar() {
           {/* Wallet Connect Button */}
           <div className="hidden md:flex items-center gap-4">
             <Button
-              onClick={handleWalletConnect}
-              className={`rounded-xl px-6 transition-all duration-300 ${
-                walletConnected
+              onClick={connectWallet}
+              className={`rounded-xl px-6 transition-all duration-300 cursor-pointer ${
+                walletAddress
                   ? 'bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30'
                   : 'bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white'
               }`}
             >
               <Wallet className="w-4 h-4 mr-2" />
-              {walletConnected ? '0x7a3...f92' : 'Connect Wallet'}
+              {walletAddress ? formatAddress(walletAddress) : 'Connect Wallet'}
             </Button>
           </div>
 
@@ -99,11 +123,11 @@ export default function Navbar() {
                 </Link>
               ))}
               <Button
-                onClick={handleWalletConnect}
+                onClick={connectWallet}
                 className="w-full mt-4 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white"
               >
                 <Wallet className="w-4 h-4 mr-2" />
-                {walletConnected ? '0x7a3...f92' : 'Connect Wallet'}
+                {walletAddress ? `${formatAddress(walletAddress)}` : 'Connect Wallet'}
               </Button>
             </div>
           </motion.div>

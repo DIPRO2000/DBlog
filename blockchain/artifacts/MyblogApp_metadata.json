@@ -483,11 +483,11 @@
 	},
 	"sources": {
 		"contracts/MyblogApp.sol": {
-			"keccak256": "0x4a8342646728aae5245f6beb3be70660a0ccd86db27ea39924f6238184f460e8",
+			"keccak256": "0x909ee6ff385798fd9307192cdf62b92d08e469b4308ede3e28a8a29d03b5ecbf",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://59c5ab8d60f8f89d3d043ac2a6e8d55f8e794b4a60f34503264d0db9632e94c9",
-				"dweb:/ipfs/QmT6BoHVhC5utmE1nKpBHj8RjgVKqHb1QxZEMToVdZ8cnS"
+				"bzz-raw://558cd88de1d7aeeb132cb39ae1e8748bdcd44f64f2749faaf51890350acd3e81",
+				"dweb:/ipfs/QmP2LHjZGDfuzwHZfdNiuKqMj6Q5ZyN5vD74n3ZZgwATch"
 			]
 		}
 	},

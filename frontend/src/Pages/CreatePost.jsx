@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { ethers } from 'ethers';
+import { CONTRACTS } from '@/config/contract';
 import { 
   PenLine, 
   Image, 
@@ -14,7 +15,8 @@ import {
   Upload,
   Sparkles,
   Eye,
-  Send
+  Send,
+  AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,28 +27,53 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ReactMarkdown from 'react-markdown';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function CreatePost() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState('write');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
   
   const [formData, setFormData] = useState({
     title: '',
-    excerpt: '',
     content: '',
     author: '',
-    author_wallet: '',
-    cover_image: '',
+    cover_image: null, // Store file object only
     tags: [],
   });
   
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [newTag, setNewTag] = useState('');
+  const [coverPreview, setCoverPreview] = useState('');
+
+  // Check wallet connection on mount
+  useEffect(() => {
+    checkWalletConnection();
+  }, []);
+
+  const checkWalletConnection = async () => {
+    if (window.ethereum) {
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const accounts = await provider.listAccounts();
+        if (accounts.length > 0) {
+          setWalletConnected(true);
+          setWalletAddress(accounts[0].address);
+        }
+      } catch (error) {
+        console.log('No wallet connected:', error);
+      }
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    setError('');
   };
 
   const handleAddTag = () => {
@@ -73,40 +100,173 @@ export default function CreatePost() {
     }
   };
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    handleInputChange('cover_image', file_url);
-    setIsUploading(false);
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setError('Please upload a valid image file (JPEG, PNG, GIF, WebP)');
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size should be less than 5MB');
+      return;
+    }
+
+    // Store file object
+    setFormData(prev => ({ 
+      ...prev, 
+      cover_image: file 
+    }));
+    
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setCoverPreview(previewUrl);
+  };
+
+  const removeCoverImage = () => {
+    if (coverPreview) {
+      URL.revokeObjectURL(coverPreview);
+    }
+    setFormData(prev => ({ 
+      ...prev, 
+      cover_image: null 
+    }));
+    setCoverPreview('');
+  };
+
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      setError('MetaMask not detected. Please install MetaMask to continue.');
+      return;
+    }
+
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const accounts = await provider.send("eth_requestAccounts", []);
+      
+      if (accounts.length > 0) {
+        setWalletConnected(true);
+        setWalletAddress(accounts[0]);
+        setSuccess('Wallet connected successfully!');
+      }
+    } catch (error) {
+      if (error.code === 4001) {
+        setError('Wallet connection rejected. Please approve the connection.');
+      } else {
+        setError('Failed to connect wallet: ' + error.message);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation
+    if (!formData.title.trim()) {
+      setError('Title is required');
+      return;
+    }
     
-    if (!formData.title.trim() || !formData.content.trim()) {
+    if (!formData.content.trim()) {
+      setError('Content is required');
+      return;
+    }
+    
+    if (!isAnonymous && !formData.author.trim()) {
+      setError('Author name is required when not posting anonymously');
+      return;
+    }
+    
+    if (!walletConnected) {
+      setError('Please connect your wallet first');
       return;
     }
 
     setIsSubmitting(true);
+    setError('');
+    setSuccess('');
 
-    const postData = {
-      title: formData.title.trim(),
-      excerpt: formData.excerpt.trim() || formData.content.slice(0, 150) + '...',
-      content: formData.content.trim(),
-      author: isAnonymous ? 'Anonymous' : (formData.author.trim() || 'Anonymous'),
-      author_wallet: isAnonymous ? '' : formData.author_wallet.trim(),
-      cover_image: formData.cover_image,
-      tags: formData.tags,
-      likes: 0,
-      dislikes: 0,
-    };
+    try {
+      // BUILD FORM-DATA FOR BACKEND
+      const formDataToSend = new FormData();
+      formDataToSend.append("title", formData.title.trim());
+      formDataToSend.append("content", formData.content.trim());
+      formDataToSend.append("author", isAnonymous ? "Anonymous" : formData.author.trim());
+      formDataToSend.append("tags", JSON.stringify(formData.tags));
+      
+      // Add cover image if exists
+      if (formData.cover_image) {
+        formDataToSend.append("image", formData.cover_image);
+      }
 
-    const newPost = await base44.entities.Post.create(postData);
-    setIsSubmitting(false);
-    navigate(`${('Post')}?id=${newPost.id}`);
+      console.log('Sending form data to backend...');
+
+      // Upload to IPFS via backend
+      const res = await fetch(`${import.meta.env.VITE_Backend_Url}/api/uploadPostToIPFS`, {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `Upload failed with status ${res.status}`);
+      }
+
+      const result = await res.json();
+      console.log("Server Response:", result);
+
+      if (!result.ipfsHash) {
+        throw new Error('No IPFS hash returned from server');
+      }
+
+      setSuccess('Post uploaded to IPFS successfully!');
+
+      // --- BLOCKCHAIN PART ---
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      console.log("Contract address:", CONTRACTS.MyBlogApp.address);
+
+      const contract = new ethers.Contract(
+        CONTRACTS.MyBlogApp.address,
+        CONTRACTS.MyBlogApp.abi,
+        signer
+      );
+
+      const authorName = isAnonymous ? "Anonymous" : formData.author.trim();
+      const title = formData.title.trim();
+      const contentHash = result.ipfsHash;
+
+      console.log('Calling smart contract with:', { authorName, title, contentHash });
+
+      const tx = await contract.createPost(
+        authorName,
+        title,
+        contentHash
+      );
+
+      setSuccess('Transaction submitted! Waiting for confirmation...');
+
+      // Wait for transaction confirmation
+      const receipt = await tx.wait();
+      console.log("Transaction confirmed:", receipt);
+
+      setSuccess('Post successfully published to blockchain!');
+
+      // Navigate to post page with transaction hash
+      navigate(`/Post?tx=${tx.hash}`);
+
+    } catch (error) {
+      console.error("Error:", error);
+      setError(error.message || 'Failed to create post. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const suggestedTags = ['Web3', 'Blockchain', 'DeFi', 'NFT', 'DAO', 'Crypto', 'Technology', 'Tutorial', 'Opinion', 'News'];
@@ -129,6 +289,40 @@ export default function CreatePost() {
               <p className="text-slate-400">Share your thoughts with the decentralized world</p>
             </div>
           </div>
+
+          {/* Wallet Status */}
+          <div className="mb-4">
+            {!walletConnected ? (
+              <Button
+                type="button"
+                onClick={connectWallet}
+                className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl"
+              >
+                Connect Wallet to Publish
+              </Button>
+            ) : (
+              <div className="text-sm text-green-400 bg-green-500/10 px-4 py-2 rounded-xl inline-flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                Wallet Connected: {walletAddress.substring(0, 6)}...{walletAddress.substring(walletAddress.length - 4)}
+              </div>
+            )}
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <Alert className="mb-4 bg-green-500/10 border-green-500/30 text-green-400">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
         </motion.div>
 
         <form onSubmit={handleSubmit}>
@@ -142,30 +336,18 @@ export default function CreatePost() {
                 transition={{ delay: 0.1 }}
               >
                 <Card className="bg-slate-900/50 border-slate-800/50 p-6">
-                  <Label className="text-white mb-2 block">Title *</Label>
+                  <Label className="text-white mb-2 block">
+                    Title *
+                    <span className="text-slate-400 text-sm ml-2">
+                      ({formData.title.length}/100)
+                    </span>
+                  </Label>
                   <Input
                     placeholder="Enter a compelling title for your post..."
                     value={formData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
+                    maxLength={100}
                     className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 rounded-xl text-lg h-12"
-                  />
-                </Card>
-              </motion.div>
-
-              {/* Excerpt */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-              >
-                <Card className="bg-slate-900/50 border-slate-800/50 p-6">
-                  <Label className="text-white mb-2 block">Excerpt (optional)</Label>
-                  <Textarea
-                    placeholder="A brief summary that appears in post previews..."
-                    value={formData.excerpt}
-                    onChange={(e) => handleInputChange('excerpt', e.target.value)}
-                    rows={2}
-                    className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 rounded-xl resize-none"
                   />
                 </Card>
               </motion.div>
@@ -178,7 +360,12 @@ export default function CreatePost() {
               >
                 <Card className="bg-slate-900/50 border-slate-800/50 p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <Label className="text-white">Content * (Markdown supported)</Label>
+                    <Label className="text-white">
+                      Content * (Markdown supported)
+                      <span className="text-slate-400 text-sm ml-2">
+                        ({formData.content.length}/10000)
+                      </span>
+                    </Label>
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                       <TabsList className="bg-slate-800/50">
                         <TabsTrigger value="write" className="data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400">
@@ -198,6 +385,7 @@ export default function CreatePost() {
                       placeholder="Write your post content here... You can use Markdown for formatting:&#10;&#10;## Heading&#10;**bold** and *italic*&#10;- bullet points&#10;> quotes&#10;```code blocks```"
                       value={formData.content}
                       onChange={(e) => handleInputChange('content', e.target.value)}
+                      maxLength={10000}
                       rows={15}
                       className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 rounded-xl resize-none font-mono"
                     />
@@ -241,51 +429,40 @@ export default function CreatePost() {
                 <Card className="bg-slate-900/50 border-slate-800/50 p-6">
                   <Label className="text-white mb-3 flex items-center gap-2">
                     <Image className="w-4 h-4 text-violet-400" />
-                    Cover Image
+                    Cover Image (optional)
                   </Label>
                   
-                  {formData.cover_image ? (
+                  {/* Show image preview */}
+                  {coverPreview ? (
                     <div className="relative rounded-xl overflow-hidden mb-3">
                       <img
-                        src={formData.cover_image}
-                        alt="Cover"
+                        src={coverPreview}
+                        alt="Cover preview"
                         className="w-full h-40 object-cover"
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleInputChange('cover_image', '')}
+                        onClick={removeCoverImage}
                         className="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-full"
                       >
                         <X className="w-4 h-4" />
                       </Button>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-700 rounded-xl cursor-pointer hover:border-violet-500/50 transition-colors mb-3">
+                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-700 rounded-xl cursor-pointer hover:border-violet-500/50 transition-colors">
                       <input
                         type="file"
                         accept="image/*"
                         onChange={handleImageUpload}
                         className="hidden"
                       />
-                      {isUploading ? (
-                        <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
-                      ) : (
-                        <>
-                          <Upload className="w-8 h-8 text-slate-500 mb-2" />
-                          <span className="text-slate-500 text-sm">Click to upload</span>
-                        </>
-                      )}
+                      <Upload className="w-8 h-8 text-slate-500 mb-2" />
+                      <span className="text-slate-500 text-sm">Click to upload</span>
+                      <span className="text-slate-600 text-xs mt-1">Max 5MB • PNG, JPG, GIF, WebP</span>
                     </label>
                   )}
-
-                  <Input
-                    placeholder="Or paste image URL..."
-                    value={formData.cover_image}
-                    onChange={(e) => handleInputChange('cover_image', e.target.value)}
-                    className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 rounded-xl text-sm"
-                  />
                 </Card>
               </motion.div>
 
@@ -316,16 +493,10 @@ export default function CreatePost() {
                   {!isAnonymous && (
                     <div className="space-y-3">
                       <Input
-                        placeholder="Your name or pseudonym"
+                        placeholder="Your name or pseudonym *"
                         value={formData.author}
                         onChange={(e) => handleInputChange('author', e.target.value)}
                         className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 rounded-xl"
-                      />
-                      <Input
-                        placeholder="Wallet address (optional)"
-                        value={formData.author_wallet}
-                        onChange={(e) => handleInputChange('author_wallet', e.target.value)}
-                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 rounded-xl font-mono text-sm"
                       />
                     </div>
                   )}
@@ -424,11 +595,14 @@ export default function CreatePost() {
               >
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !formData.title.trim() || !formData.content.trim()}
+                  disabled={isSubmitting || !formData.title.trim() || !formData.content.trim() || !walletConnected}
                   className="w-full rounded-xl h-12 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-lg group"
                 >
                   {isSubmitting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                      Publishing...
+                    </>
                   ) : (
                     <>
                       <Send className="w-5 h-5 mr-2" />
@@ -438,7 +612,7 @@ export default function CreatePost() {
                   )}
                 </Button>
                 <p className="text-slate-500 text-xs text-center mt-2">
-                  Your post will be published to the decentralized network
+                  Your post will be stored on IPFS and blockchain
                 </p>
               </motion.div>
             </div>
