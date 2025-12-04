@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Link } from 'react-router-dom';
 // import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -38,6 +38,25 @@ export default function Navbar() {
       console.error("Wallet connection failed:", error);
     }
   };
+
+  const checkWalletConnection = async () => {
+    if (window.ethereum) {
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const accounts = await provider.listAccounts();
+        if (accounts.length > 0) {
+          setWalletAddress(accounts[0].address);
+        }
+      } catch (error) {
+        console.log('No wallet connected:', error);
+      }
+    }
+  };
+
+  // Check wallet connection on mount
+  useEffect(() => {
+    checkWalletConnection();
+  }, []);
 
   const formatAddress = (address) => {
     if (!address) return '';

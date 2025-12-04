@@ -6,8 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import PostCard from '@/components/posts/PostCard';
-import Postdb from '@/Entities/Post.db';
-import Commentdb from '@/Entities/Comment.db';
 
 export default function AllPosts() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,25 +20,32 @@ export default function AllPosts() {
   // Fetch data directly
   useEffect(() => {
     async function fetchData() {
+      setIsLoading(true);
+
       try {
-        setIsLoading(true);
+        const res = await fetch(
+          `${import.meta.env.VITE_Backend_Url}/api/getallpost`
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+
+        const data = await res.json();
+
+        // The backend returns an ARRAY, not {posts: [...]}
+        setPosts(Array.isArray(data) ? data : []);
         
-        // Fetch posts sorted by created_date, limit 6
-        const postsData = await Postdb.list('-created_date', 6);
-        setPosts(postsData || []);
-        
-        // Fetch all comments
-        const commentsData = await Commentdb.list();
-        setAllComments(commentsData || []);
-        
+        // console.log("Fetched posts:", data);
+
       } catch (err) {
+        console.error("Error fetching data:", err);
         setError(err.message);
-        console.error('Error fetching data:', err);
       } finally {
         setIsLoading(false);
       }
     }
-    
+
     fetchData();
   }, []);
 

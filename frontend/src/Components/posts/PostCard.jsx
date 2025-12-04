@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { ThumbsUp, ThumbsDown, MessageCircle, ArrowRight, Calendar, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +19,13 @@ export default function PostCard({ post, index = 0, commentCount = 0 }) {
     },
   };
 
+  let tags = [];
+  try {
+    tags = JSON.parse(post.content?.tags || "[]");
+  } catch {
+    tags = [];
+  }
+
   return (
     <motion.article
       variants={cardVariants}
@@ -28,14 +34,14 @@ export default function PostCard({ post, index = 0, commentCount = 0 }) {
       whileHover={{ y: -4 }}
       className="group relative bg-slate-900/50 backdrop-blur-sm border border-slate-800/50 rounded-2xl overflow-hidden hover:border-violet-500/30 transition-all duration-500"
     >
-      {/* Gradient Overlay on Hover */}
+      {/* Hover Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       {/* Cover Image */}
-      {post.cover_image && (
+      {post.content?.imageHash && (
         <div className="relative h-48 overflow-hidden">
           <img
-            src={post.cover_image}
+            src={`${import.meta.env.VITE_IPFS_GATEWAY}/${post.content.imageHash}`}
             alt={post.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
@@ -45,9 +51,9 @@ export default function PostCard({ post, index = 0, commentCount = 0 }) {
 
       <div className="relative p-6">
         {/* Tags */}
-        {post.tags && post.tags.length > 0 && (
+        {tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
-            {post.tags.slice(0, 3).map((tag) => (
+            {tags.map((tag) => (
               <Badge
                 key={tag}
                 variant="outline"
@@ -77,7 +83,7 @@ export default function PostCard({ post, index = 0, commentCount = 0 }) {
           </div>
           <div className="flex items-center gap-1.5">
             <Calendar className="w-4 h-4" />
-            <span>{format(new Date(post.created_date), 'MMM d, yyyy')}</span>
+            <span>{format(new Date(Number(post.timestamp) * 1000), 'MMM d, yyyy')}</span>
           </div>
         </div>
 
@@ -99,7 +105,7 @@ export default function PostCard({ post, index = 0, commentCount = 0 }) {
           </div>
 
           <Link
-            to={`${('Post')}?id=${post.id}`}
+            to={`/Post/${post.id}`}
             className="flex items-center gap-2 text-violet-400 hover:text-violet-300 font-medium text-sm group/link"
           >
             Read More
