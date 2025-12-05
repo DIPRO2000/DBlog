@@ -1,31 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ThumbsUp, ThumbsDown, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { base44 } from '@/api/base44Client';
 import { formatDistanceToNow } from 'date-fns';
+import { CONTRACTS } from '@/config/contract';
+import { ethers } from 'ethers';
 
-export default function Comment({ comment, onUpdate }) {
+export default function Comment({ comment }) {
   const [isLiking, setIsLiking] = useState(false);
   const [isDisliking, setIsDisliking] = useState(false);
+  const [likes, setLikes] = useState(comment.upvote || 0);
+  const [dislikes, setDislikes] = useState(comment.downvote || 0);
 
   const handleLike = async () => {
     setIsLiking(true);
-    await base44.entities.Comment.update(comment.id, {
-      likes: (comment.likes || 0) + 1,
-    });
-    onUpdate?.();
+    
+    try 
+    {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACTS.MyBlogApp.address, CONTRACTS.MyBlogApp.abi, signer);
+
+      const tx = await contract.upvoteCo
+    } 
+    catch (error) 
+    {
+      console.error("Error liking comment:", error);
+    }
+
     setIsLiking(false);
   };
 
   const handleDislike = async () => {
-    setIsDisliking(true);
-    await base44.entities.Comment.update(comment.id, {
-      dislikes: (comment.dislikes || 0) + 1,
-    });
-    onUpdate?.();
-    setIsDisliking(false);
+    // setIsDisliking(true);
+    // await base44.entities.Comment.update(comment.id, {
+    //   dislikes: (comment.dislikes || 0) + 1,
+    // });
+    // onUpdate?.();
+    // setIsDisliking(false);
   };
+  useEffect(() => {
+    console.log("Comment component mounted:", comment);
+  },[comment]);
 
   return (
     <motion.div
@@ -42,16 +58,16 @@ export default function Comment({ comment, onUpdate }) {
         <div className="flex-1 min-w-0">
           {/* Header */}
           <div className="flex items-center gap-2 mb-2">
-            <span className="font-semibold text-white">{comment.username}</span>
+            <span className="font-semibold text-white">{comment.commenterName}</span>
             <span className="text-slate-500 text-sm">•</span>
             <span className="text-slate-500 text-sm">
-              {formatDistanceToNow(new Date(comment.created_date), { addSuffix: true })}
+              {formatDistanceToNow(new Date(Number(comment.timestamp)*1000), { addSuffix: true })}
             </span>
           </div>
 
           {/* Comment Text */}
           <p className="text-slate-300 text-sm leading-relaxed mb-3">
-            {comment.text}
+            {comment.content}
           </p>
 
           {/* Actions */}
@@ -64,7 +80,7 @@ export default function Comment({ comment, onUpdate }) {
               className="h-8 px-3 text-slate-400 hover:text-violet-400 hover:bg-violet-500/10"
             >
               <ThumbsUp className="w-4 h-4 mr-1.5" />
-              <span className="text-sm">{comment.likes || 0}</span>
+              <span className="text-sm">{likes}</span>
             </Button>
             <Button
               variant="ghost"
@@ -74,7 +90,7 @@ export default function Comment({ comment, onUpdate }) {
               className="h-8 px-3 text-slate-400 hover:text-red-400 hover:bg-red-500/10"
             >
               <ThumbsDown className="w-4 h-4 mr-1.5" />
-              <span className="text-sm">{comment.dislikes || 0}</span>
+              <span className="text-sm">{dislikes}</span>
             </Button>
           </div>
         </div>

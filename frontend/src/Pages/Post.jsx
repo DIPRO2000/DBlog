@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
 import LikeDislikeButtons from '@/components/posts/LikeDislikeButtons';
-// import CommentSection from '@/components/posts/CommentSection';
+import CommentSection from '@/components/posts/CommentSection';
 
 export default function Post() {
   const { postId } = useParams();
@@ -252,7 +252,7 @@ export default function Post() {
         </motion.article>
 
         {/* Comment Section */}
-        {/* <motion.div
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -260,10 +260,9 @@ export default function Post() {
         >
           <CommentSection
             postId={postId}
-            comments={comments}
             onCommentAdded={handleCommentAdded}
           />
-        </motion.div> */}
+        </motion.div>
       </div>
     </div>
   );

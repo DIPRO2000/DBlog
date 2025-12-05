@@ -26,7 +26,7 @@ export const getAllCommentsFromPost = async (req, res) => {
       content: comment.content,
       upvote: comment.upvote.toString(),
       downvote: comment.downvote.toString(),
-      timestamp: new Date(Number(comment.timestamp) * 1000).toISOString()
+      timestamp: comment.timestamp.toString()
     }));
 
     return res.status(200).json({

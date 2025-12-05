@@ -1,35 +1,68 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Send, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { base44 } from '@/api/base44Client';
+// import { base44 } from '@/api/base44Client';
 import Comment from './Comment';
+import { CONTRACTS } from '@/config/contract';
+import { ethers } from 'ethers';
 
-export default function CommentSection({ postId, comments, onCommentAdded }) {
-  const [username, setUsername] = useState('');
+export default function CommentSection({ postId, onCommentAdded }) {
+  const [username, setUsername] = useState('');                    
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [comments, setComments] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username.trim() || !text.trim()) return;
 
-    setIsSubmitting(true);
-    await base44.entities.Comment.create({
-      post_id: postId,
-      username: username.trim(),
-      text: text.trim(),
-      likes: 0,
-      dislikes: 0,
-    });
+    // console.log("Submitting comment:", { postId, username, text });
+
+    try 
+    {
+      setIsSubmitting(true);
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACTS.MyBlogApp.address, CONTRACTS.MyBlogApp.abi, signer);
+      const userAddress = await signer.getAddress();
+
+      const tx = await contract.addComment(postId, username, text);
+      await tx.wait();
+
+      console.log("Comment submitted:", tx);
+
+      setUsername('');
+      setText('');
+      setIsSubmitting(false);
+
+    } 
+    catch (error) {
+      console.error("Error submitting comment:", error);
+      setIsSubmitting(false);
+    }
     
-    setUsername('');
-    setText('');
-    setIsSubmitting(false);
-    onCommentAdded?.();
+    // onCommentAdded?.();
   };
+
+  useEffect(() =>{
+
+    const fetchComments = async () => {
+      try 
+      {
+        const response =await fetch(`${import.meta.env.VITE_Backend_Url}/api/comments/${postId}`);
+        const data = await response.json();
+        setComments(data.result);
+      } 
+      catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    }
+
+    fetchComments();
+  },[postId]);
 
   return (
     <div className="space-y-6">
