@@ -125,7 +125,7 @@ export default function About() {
                       <span className="text-white font-bold text-3xl">D</span>
                     </div>
                     <p className="text-white font-semibold text-lg">DecentBlog</p>
-                    <p className="text-slate-500 text-sm">Since 2024</p>
+                    <p className="text-slate-500 text-sm">Since 2025</p>
                   </div>
                 </div>
               </div>

@@ -1,49 +1,126 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { base44 } from '@/api/base44Client';
+import { ethers } from 'ethers';
+import { CONTRACTS } from '@/config/contract';
 
 export default function LikeDislikeButtons({ post, onUpdate }) {
   const [isLiking, setIsLiking] = useState(false);
   const [isDisliking, setIsDisliking] = useState(false);
+
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
 
-  const handleLike = async () => {
-    if (liked) return;
-    setIsLiking(true);
-    await base44.entities.Post.update(post.id, {
-      likes: (post.likes || 0) + 1,
-      dislikes: disliked ? (post.dislikes || 1) - 1 : post.dislikes,
-    });
-    setLiked(true);
-    setDisliked(false);
-    onUpdate?.();
-    setIsLiking(false);
+  const [upvotes, setUpvotes] = useState(post.upvote || 0);
+  const [downvotes, setDownvotes] = useState(post.downvote || 0);
+
+  // One consistent contract
+  const CONTRACT = CONTRACTS.MyBlogApp;
+
+  /** 🔍 Check if user already reacted */
+  const reactionChecker = async () => {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT.address, CONTRACT.abi, signer);
+      const userAddress = await signer.getAddress();
+
+      const hasUpvoted = await contract.hasUpVoted(post.id, userAddress);
+      const hasDownvoted = await contract.hasDownVoted(post.id, userAddress);
+
+      return { hasUpvoted, hasDownvoted };
+    } catch (err) {
+      console.error("Error checking reactions:", err);
+      return { hasUpvoted: false, hasDownvoted: false };
+    }
   };
 
+  /** Load initial reaction state */
+  useEffect(() => {
+    async function loadReactionState() {
+      const { hasUpvoted, hasDownvoted } = await reactionChecker();
+      setLiked(hasUpvoted);
+      setDisliked(hasDownvoted);
+    }
+    loadReactionState();
+  }, [post.id]);
+
+  /** 👍 LIKE */
+  const handleLike = async () => {
+    const { hasUpvoted, hasDownvoted } = await reactionChecker();
+
+    if (hasUpvoted || hasDownvoted) {
+      alert("You have already voted on this post.");
+      return;
+    }
+
+    if (isLiking || isDisliking) return;
+
+    try {
+      setIsLiking(true);
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT.address, CONTRACT.abi, signer);
+
+      const tx = await contract.upvotePost(post.id);
+      await tx.wait();
+
+      setLiked(true);
+      setDisliked(false);
+      setUpvotes((prev)=> prev + 1);
+
+      onUpdate?.();
+    } catch (err) {
+      console.error("Error liking post:", err);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
+  /** 👎 DISLIKE */
   const handleDislike = async () => {
-    if (disliked) return;
-    setIsDisliking(true);
-    await base44.entities.Post.update(post.id, {
-      dislikes: (post.dislikes || 0) + 1,
-      likes: liked ? (post.likes || 1) - 1 : post.likes,
-    });
-    setDisliked(true);
-    setLiked(false);
-    onUpdate?.();
-    setIsDisliking(false);
+    const { hasUpvoted, hasDownvoted } = await reactionChecker();
+
+    if (hasUpvoted || hasDownvoted) {
+      alert("You have already voted on this post.");
+      return;
+    }
+
+    if (isLiking || isDisliking) return;
+
+    try {
+      setIsDisliking(true);
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT.address, CONTRACT.abi, signer);
+
+      const tx = await contract.downvotePost(post.id);
+      await tx.wait();
+
+      setDisliked(true);
+      setLiked(false);
+      setDownvotes((prev)=> prev + 1);
+
+      onUpdate?.();
+    } catch (err) {
+      console.error("Error disliking post:", err);
+    } finally {
+      setIsDisliking(false);
+    }
   };
 
   return (
     <div className="flex items-center gap-2">
+      {/* LIKE */}
       <motion.div whileTap={{ scale: 0.95 }}>
         <Button
           variant="outline"
           size="sm"
           onClick={handleLike}
-          disabled={isLiking}
+          disabled={isLiking || isDisliking}
           className={`rounded-xl border-slate-700 ${
             liked
               ? 'bg-violet-500/20 border-violet-500/50 text-violet-400'
@@ -51,16 +128,17 @@ export default function LikeDislikeButtons({ post, onUpdate }) {
           }`}
         >
           <ThumbsUp className={`w-4 h-4 mr-2 ${liked ? 'fill-violet-400' : ''}`} />
-          <span>{post.likes || 0}</span>
+          <span>{upvotes}</span>
         </Button>
       </motion.div>
 
+      {/* DISLIKE */}
       <motion.div whileTap={{ scale: 0.95 }}>
         <Button
           variant="outline"
           size="sm"
           onClick={handleDislike}
-          disabled={isDisliking}
+          disabled={isLiking || isDisliking}
           className={`rounded-xl border-slate-700 ${
             disliked
               ? 'bg-red-500/20 border-red-500/50 text-red-400'
@@ -68,7 +146,7 @@ export default function LikeDislikeButtons({ post, onUpdate }) {
           }`}
         >
           <ThumbsDown className={`w-4 h-4 mr-2 ${disliked ? 'fill-red-400' : ''}`} />
-          <span>{post.dislikes || 0}</span>
+          <span>{downvotes}</span>
         </Button>
       </motion.div>
     </div>

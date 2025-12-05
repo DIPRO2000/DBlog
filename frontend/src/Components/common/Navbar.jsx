@@ -34,6 +34,7 @@ export default function Navbar() {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const accounts = await provider.send("eth_requestAccounts", []);
       setWalletAddress(accounts[0]);
+      window.location.reload();
     } catch (error) {
       console.error("Wallet connection failed:", error);
     }
@@ -68,7 +69,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to={('Home')} className="flex items-center gap-2">
+          <Link to={('')} className="flex items-center gap-2">
             <motion.div
               whileHover={{ rotate: 180 }}
               transition={{ duration: 0.5 }}

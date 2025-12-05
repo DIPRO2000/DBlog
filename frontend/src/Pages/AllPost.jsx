@@ -1,5 +1,4 @@
-import React, { useState,useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Search, Filter, Grid3X3, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -17,7 +16,6 @@ export default function AllPosts() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch data directly
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
@@ -32,11 +30,7 @@ export default function AllPosts() {
         }
 
         const data = await res.json();
-
-        // The backend returns an ARRAY, not {posts: [...]}
         setPosts(Array.isArray(data) ? data : []);
-        
-        // console.log("Fetched posts:", data);
 
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -49,16 +43,37 @@ export default function AllPosts() {
     fetchData();
   }, []);
 
-  // Get all unique tags
-  const allTags = [...new Set(posts.flatMap((p) => p.tags || []))];
+  // Correct tag parser
+  const parseTags = (tags) => {
+    if (!tags) return [];
+    if (Array.isArray(tags)) return tags;
 
-  // Filter posts
+    try {
+      return JSON.parse(tags);
+    } catch {
+      return [];
+    }
+  };
+
+  // Generate unique tags
+  const allTags = [
+    ...new Set(
+      posts.flatMap((p) => parseTags(p.content?.tags) || [])
+    ),
+  ];
+
+  // FIXED FILTERING
   const filteredPosts = posts.filter((post) => {
+    const postTags = parseTags(post.content?.tags);
+
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.content?.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.author.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTag = !selectedTag || (post.tags && post.tags.includes(selectedTag));
+
+    const matchesTag =
+      !selectedTag || postTags.includes(selectedTag);
+
     return matchesSearch && matchesTag;
   });
 
@@ -69,6 +84,7 @@ export default function AllPosts() {
   return (
     <div className="min-h-screen bg-slate-950 pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -83,14 +99,14 @@ export default function AllPosts() {
           </p>
         </motion.div>
 
-        {/* Search and Filters */}
+        {/* Search + Filters */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="mb-8 space-y-4"
         >
-          {/* Search Bar */}
+          {/* Search */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
@@ -101,6 +117,7 @@ export default function AllPosts() {
                 className="pl-10 bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 rounded-xl h-12"
               />
             </div>
+
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -114,6 +131,7 @@ export default function AllPosts() {
               >
                 <Grid3X3 className="w-5 h-5" />
               </Button>
+
               <Button
                 variant="outline"
                 size="icon"
@@ -145,11 +163,14 @@ export default function AllPosts() {
                 <Filter className="w-4 h-4 mr-1" />
                 All
               </Button>
+
               {allTags.map((tag) => (
                 <Badge
                   key={tag}
                   variant="outline"
-                  onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
+                  onClick={() =>
+                    setSelectedTag(tag === selectedTag ? null : tag)
+                  }
                   className={`cursor-pointer transition-all ${
                     tag === selectedTag
                       ? 'bg-violet-500/20 border-violet-500/50 text-violet-400'
@@ -173,7 +194,9 @@ export default function AllPosts() {
             <div className="w-20 h-20 rounded-full bg-slate-800/50 flex items-center justify-center mx-auto mb-4">
               <Search className="w-10 h-10 text-slate-600" />
             </div>
-            <p className="text-slate-500 text-lg">No posts found matching your criteria.</p>
+            <p className="text-slate-500 text-lg">
+              No posts found matching your criteria.
+            </p>
           </div>
         ) : (
           <div
@@ -194,7 +217,6 @@ export default function AllPosts() {
           </div>
         )}
 
-        {/* Results Count */}
         {!isLoading && filteredPosts.length > 0 && (
           <motion.p
             initial={{ opacity: 0 }}

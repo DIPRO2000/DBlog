@@ -29,8 +29,10 @@ contract MyblogApp {
 
     // Comment storage
     mapping(bytes32 => Comment[]) private postComments; // postId => array of comments
-    mapping(bytes32 => mapping(address => bool)) private hasVoted; // post votes
-    mapping(bytes32 => mapping(address => mapping(uint => bool))) private hasVotedComment; // comment votes
+    mapping(bytes32 => mapping(address => bool)) public hasUpVoted; // post votes for upvotes
+    mapping(bytes32 => mapping(address => bool)) public hasDownVoted; // post votes for downvotes
+    mapping(bytes32 => mapping(address => mapping(uint => bool))) private hasUpVotedComment; // comment votes for up votes
+    mapping(bytes32 => mapping(address => mapping(uint => bool))) private hasDownVotedComment; // comment votes for down votes
 
     // Events
     event Postcreation(bytes32 indexed postId, string title, string author, uint256 timestamp);
@@ -63,17 +65,17 @@ contract MyblogApp {
     // Upvote/Downvote post
     function upvotePost(bytes32 _postId) public {
         require(posts[_postId].id != bytes32(0), "Post does not exist.");
-        require(!hasVoted[_postId][msg.sender], "Already voted on this post.");
+        require(!hasUpVoted[_postId][msg.sender], "Already up voted on this post.");
         posts[_postId].upvote++;
-        hasVoted[_postId][msg.sender] = true;
+        hasUpVoted[_postId][msg.sender] = true;
         emit PostVoted(_postId, msg.sender, true);
     }
 
     function downvotePost(bytes32 _postId) public {
         require(posts[_postId].id != bytes32(0), "Post does not exist.");
-        require(!hasVoted[_postId][msg.sender], "Already voted on this post.");
+        require(!hasDownVoted[_postId][msg.sender], "Already down voted on this post.");
         posts[_postId].downvote++;
-        hasVoted[_postId][msg.sender] = true;
+        hasDownVoted[_postId][msg.sender] = true;
         emit PostVoted(_postId, msg.sender, false);
     }
 
@@ -101,20 +103,20 @@ contract MyblogApp {
     // Upvote/Downvote comment
     function upvoteComment(bytes32 _postId, uint _commentIndex) public {
         require(_commentIndex < postComments[_postId].length, "Comment does not exist");
-        require(!hasVotedComment[_postId][msg.sender][_commentIndex], "Already voted on this comment");
+        require(!hasUpVotedComment[_postId][msg.sender][_commentIndex], "Already voted on this comment");
 
         postComments[_postId][_commentIndex].upvote++;
-        hasVotedComment[_postId][msg.sender][_commentIndex] = true;
+        hasUpVotedComment[_postId][msg.sender][_commentIndex] = true;
 
         emit CommentVoted(_postId, postComments[_postId][_commentIndex].id, msg.sender, true);
     }
 
     function downvoteComment(bytes32 _postId, uint _commentIndex) public {
         require(_commentIndex < postComments[_postId].length, "Comment does not exist");
-        require(!hasVotedComment[_postId][msg.sender][_commentIndex], "Already voted on this comment");
+        require(!hasDownVotedComment[_postId][msg.sender][_commentIndex], "Already voted on this comment");
 
         postComments[_postId][_commentIndex].downvote++;
-        hasVotedComment[_postId][msg.sender][_commentIndex] = true;
+        hasDownVotedComment[_postId][msg.sender][_commentIndex] = true;
 
         emit CommentVoted(_postId, postComments[_postId][_commentIndex].id, msg.sender, false);
     }

@@ -78,7 +78,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-slate-800/50 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-slate-600 text-sm">
-            © 2024 DecentBlog. All rights reserved.
+            © 2025 DecentBlog. All rights reserved.
           </p>
           <p className="text-slate-600 text-sm flex items-center gap-2">
             Built with

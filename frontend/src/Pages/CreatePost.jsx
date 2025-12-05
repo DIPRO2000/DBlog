@@ -254,12 +254,13 @@ export default function CreatePost() {
 
       // Wait for transaction confirmation
       const receipt = await tx.wait();
+      console.log("Tx:", tx);
       console.log("Transaction confirmed:", receipt);
 
       setSuccess('Post successfully published to blockchain!');
 
       // Navigate to post page with transaction hash
-      navigate(`/Post?tx=${tx.hash}`);
+      //navigate(`/post/${tx.hash}`);
 
     } catch (error) {
       console.error("Error:", error);

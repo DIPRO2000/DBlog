@@ -1,11 +1,16 @@
-import React from 'react';
+import React, {  useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ThumbsUp, ThumbsDown, MessageCircle, ArrowRight, Calendar, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { CONTRACTS } from '@/config/contract';
+import { ethers } from 'ethers';
 
 export default function PostCard({ post, index = 0, commentCount = 0 }) {
+  const [liked,setLiked]=useState(false);
+  const [disliked,setDisliked]=useState(false);
+
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -25,6 +30,29 @@ export default function PostCard({ post, index = 0, commentCount = 0 }) {
   } catch {
     tags = [];
   }
+
+  useEffect(() =>{
+    const fetchReactions = async () => {
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACTS.MyBlogApp.address, CONTRACTS.MyBlogApp.abi, signer);
+      const userAddress = await signer.getAddress();
+      try 
+      {
+        const hasUpvoted = await contract.hasUpVoted(post.id, userAddress);
+        const hasDownvoted = await contract.hasDownVoted(post.id, userAddress);
+        setLiked(hasUpvoted);
+        setDisliked(hasDownvoted);
+      } 
+      catch (error) 
+      {
+        console.error("Error fetching reactions:", error);
+      }
+    };
+
+    fetchReactions();
+  },[post.id]);
 
   return (
     <motion.article
@@ -71,9 +99,9 @@ export default function PostCard({ post, index = 0, commentCount = 0 }) {
         </h2>
 
         {/* Excerpt */}
-        <p className="text-slate-400 text-sm mb-4 line-clamp-2 leading-relaxed">
+        {/* <p className="text-slate-400 text-sm mb-4 line-clamp-2 leading-relaxed">
           {post.excerpt}
-        </p>
+        </p> */}
 
         {/* Meta Info */}
         <div className="flex items-center gap-4 text-sm text-slate-500 mb-4">
@@ -91,12 +119,12 @@ export default function PostCard({ post, index = 0, commentCount = 0 }) {
         <div className="flex items-center justify-between pt-4 border-t border-slate-800/50">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 text-slate-500">
-              <ThumbsUp className="w-4 h-4" />
-              <span className="text-sm">{post.likes || 0}</span>
+              <ThumbsUp className={`w-4 h-4 ${liked ? `fill-violet-500` : ''}`} />
+              <span className="text-sm">{post.upvote || 0}</span>
             </div>
             <div className="flex items-center gap-1.5 text-slate-500">
-              <ThumbsDown className="w-4 h-4" />
-              <span className="text-sm">{post.dislikes || 0}</span>
+              <ThumbsDown className={`w-4 h-4 ${disliked ? 'fill-violet-500' : ``}`} />
+              <span className="text-sm">{post.downvote || 0}</span>
             </div>
             <div className="flex items-center gap-1.5 text-slate-500">
               <MessageCircle className="w-4 h-4" />
