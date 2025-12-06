@@ -1,6 +1,4 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, TrendingUp } from 'lucide-react';
 import AnimatedHero from '@/components/home/AnimatedHero';
@@ -8,31 +6,39 @@ import PostCard from '@/components/posts/PostCard';
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
-  const [allComments, setAllComments] = useState([]);
+  const [commentCounts, setCommentCounts] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch data directly
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_Backend_Url}/api/getallpost`
-        );
+        const res = await fetch(`${import.meta.env.VITE_Backend_Url}/api/getallpost`);
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch posts");
-        }
+        if (!res.ok) throw new Error("Failed to fetch posts");
 
         const data = await res.json();
+        const postArray = Array.isArray(data) ? data : [];
+        setPosts(postArray);
 
-        // The backend returns an ARRAY, not {posts: [...]}
-        setPosts(Array.isArray(data) ? data : []);
-        
-        // console.log("Fetched posts:", data);
+        // Fetch all comment counts in parallel
+        const counts = {};
+        await Promise.all(
+          postArray.map(async (post) => {
+            try {
+              const res = await fetch(
+                `${import.meta.env.VITE_Backend_Url}/api/comments/${post.id}`
+              );
+              const data = await res.json();
+              counts[post.id] = data?.result?.length || 0;
+            } catch {
+              counts[post.id] = 0;
+            }
+          })
+        );
 
+        setCommentCounts(counts);
       } catch (err) {
         console.error("Error fetching data:", err);
         setError(err.message);
@@ -44,19 +50,13 @@ export default function Home() {
     fetchData();
   }, []);
 
-  const getCommentCount = (postId) => {
-    return allComments.filter((c) => c.post_id === postId).length;
-  };
-
   return (
     <div className="bg-slate-950">
-      {/* Hero Section */}
       <AnimatedHero />
 
-      {/* Recent Posts Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          {/* Section Header */}
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -76,7 +76,6 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* Posts Grid */}
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
@@ -92,7 +91,7 @@ export default function Home() {
                   key={post.id}
                   post={post}
                   index={index}
-                  commentCount={getCommentCount(post.id)}
+                  commentCount={commentCounts[post.id] || 0}
                 />
               ))}
             </div>
@@ -107,7 +106,7 @@ export default function Home() {
             {[
               { label: 'Total Posts', value: posts.length, suffix: '+' },
               { label: 'Active Writers', value: 12, suffix: '+' },
-              { label: 'Comments', value: allComments.length, suffix: '+' },
+              { label: 'Comments', value: Object.values(commentCounts).reduce((a, b) => a + b, 0), suffix: '+' },
               { label: 'Uptime', value: 99.9, suffix: '%' },
             ].map((stat, index) => (
               <motion.div

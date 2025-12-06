@@ -37,14 +37,13 @@ export default function CommentSection({ postId, onCommentAdded }) {
       setUsername('');
       setText('');
       setIsSubmitting(false);
-
+      window.location.reload();
     } 
     catch (error) {
       console.error("Error submitting comment:", error);
       setIsSubmitting(false);
     }
     
-    // onCommentAdded?.();
   };
 
   useEffect(() =>{
@@ -124,7 +123,7 @@ export default function CommentSection({ postId, onCommentAdded }) {
             </motion.div>
           ) : (
             comments.map((comment) => (
-              <Comment key={comment.id} comment={comment} onUpdate={onCommentAdded} />
+              <Comment key={comment.id} comment={comment} postId={postId} />
             ))
           )}
         </AnimatePresence>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ThumbsUp, ThumbsDown, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,13 +6,45 @@ import { formatDistanceToNow } from 'date-fns';
 import { CONTRACTS } from '@/config/contract';
 import { ethers } from 'ethers';
 
-export default function Comment({ comment }) {
+export default function Comment({ comment , postId }) {
   const [isLiking, setIsLiking] = useState(false);
   const [isDisliking, setIsDisliking] = useState(false);
-  const [likes, setLikes] = useState(comment.upvote || 0);
-  const [dislikes, setDislikes] = useState(comment.downvote || 0);
+  const [likes, setLikes] = useState(Number(comment.upvote) || 0);
+  const [dislikes, setDislikes] = useState(Number(comment.downvote) || 0);
+  const [upvoted, setUpvoted] = useState(false);
+  const [downvoted, setDownvoted] = useState(false);
+
+  const ReactionCheckerForComments = async () =>{
+    try 
+    {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACTS.MyBlogApp.address, CONTRACTS.MyBlogApp.abi, signer);
+      const userAddress = await signer.getAddress();
+
+      const hasUpVoted = await contract.hasUpVotedComment(comment.commentId,userAddress);
+      const hasDownVoted = await contract.hasDownVotedComment(comment.commentId,userAddress);
+
+      setUpvoted(hasUpVoted);
+      setDownvoted(hasDownVoted);
+
+      return hasUpVoted || hasDownVoted;
+    } 
+    catch (error) 
+    {
+      console.error("Error checking reactions for comment:", error);
+      return false;
+    }
+  }
 
   const handleLike = async () => {
+    const alreadyReacted = await ReactionCheckerForComments();
+    if(alreadyReacted)
+    {
+      alert("You have already reacted to this comment");
+      return;
+    };
+
     setIsLiking(true);
     
     try 
@@ -21,7 +53,10 @@ export default function Comment({ comment }) {
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACTS.MyBlogApp.address, CONTRACTS.MyBlogApp.abi, signer);
 
-      const tx = await contract.upvoteCo
+      const tx = await contract.upvoteComment(postId,comment.commentId);
+      await tx.wait();
+
+      setLikes(likes + 1);
     } 
     catch (error) 
     {
@@ -32,16 +67,36 @@ export default function Comment({ comment }) {
   };
 
   const handleDislike = async () => {
-    // setIsDisliking(true);
-    // await base44.entities.Comment.update(comment.id, {
-    //   dislikes: (comment.dislikes || 0) + 1,
-    // });
-    // onUpdate?.();
-    // setIsDisliking(false);
+    if(ReactionCheckerForComments())
+    {
+      alert("You have already reacted to this comment");
+      return;
+    };
+
+    setIsDisliking(true);
+
+    try 
+    {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACTS.MyBlogApp.address, CONTRACTS.MyBlogApp.abi, signer);
+
+      const tx = await contract.downvoteComment(postId,comment.commentId);
+      await tx.wait();
+
+      setDislikes(dislikes + 1);
+    } 
+    catch (error) 
+    {
+      console.error("Error liking comment:", error);
+    }
+
+    setIsDisliking(false);
   };
-  useEffect(() => {
-    console.log("Comment component mounted:", comment);
-  },[comment]);
+
+  // useEffect(() => {
+  //   console.log("Comment component mounted:", comment);
+  // },[comment]);
 
   return (
     <motion.div
