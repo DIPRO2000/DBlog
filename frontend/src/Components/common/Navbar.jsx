@@ -1,8 +1,13 @@
 import React, { useState,useEffect } from 'react';
 import { Link } from 'react-router-dom';
-// import { createPageUrl } from '@/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Wallet, Home, FileText, Info } from 'lucide-react';
+import { Menu, X, Wallet, Home, FileText, Info, User, MessageCircle, ChevronDown } from 'lucide-react';
 import { Button } from '../../Components/ui/Button';
 import { ethers } from 'ethers';
 
@@ -94,20 +99,51 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+            
+            {/* My Activity Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="px-4 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all duration-300 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  My Activity
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-slate-900 border-slate-800">
+                <DropdownMenuItem asChild>
+                  <Link
+                    to={('MyPosts')}
+                    className="flex items-center gap-2 text-slate-300 hover:text-white cursor-pointer"
+                  >
+                    <FileText className="w-4 h-4" />
+                    My Posts
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link
+                    to={('MyComments')}
+                    className="flex items-center gap-2 text-slate-300 hover:text-white cursor-pointer"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    My Comments
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Wallet Connect Button */}
           <div className="hidden md:flex items-center gap-4">
             <Button
               onClick={connectWallet}
-              className={`rounded-xl px-6 transition-all duration-300 cursor-pointer ${
+              className={`rounded-xl px-6 transition-all duration-300 ${
                 walletAddress
                   ? 'bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30'
                   : 'bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white'
               }`}
             >
               <Wallet className="w-4 h-4 mr-2" />
-              {walletAddress ? formatAddress(walletAddress) : 'Connect Wallet'}
+              {walletAddress ? `${formatAddress(walletAddress)}` : 'Connect Wallet'}
             </Button>
           </div>
 
@@ -142,6 +178,28 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
+              
+              {/* My Activity in Mobile */}
+              <div className="border-t border-slate-800 pt-3 mt-3">
+                <p className="text-slate-500 text-xs px-4 mb-2">MY ACTIVITY</p>
+                <Link
+                  to={('MyPosts')}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all"
+                >
+                  <FileText className="w-5 h-5" />
+                  My Posts
+                </Link>
+                <Link
+                  to={('MyComments')}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  My Comments
+                </Link>
+              </div>
+              
               <Button
                 onClick={connectWallet}
                 className="w-full mt-4 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white"

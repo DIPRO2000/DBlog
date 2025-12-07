@@ -66,7 +66,7 @@ export const getAllPosts = async (req, res) => {
 
 //Get all Posts of any User
 export const getPostsbyUsers = async (req, res) => {
-  const { user_address } = req.body;
+  const { user_address } = req.params;
 
   if (!user_address) {
     return res.status(400).json({ message: "A Wallet Address is required" });
@@ -83,7 +83,7 @@ export const getPostsbyUsers = async (req, res) => {
         try {
           // fetch from configured gateway
           const ipfsGateway = process.env.IPFS_GATEWAY;
-          const resp = await axios.get(`${ipfsGateway}${p.contentHash}`,{
+          const resp = await axios.get(`${ipfsGateway}/${p.contentHash}`,{
             headers: {
                 "User-Agent": "MyApp/1.0",  // or any string
                 "Accept": "application/json"
@@ -105,6 +105,10 @@ export const getPostsbyUsers = async (req, res) => {
         };
       })
     );
+
+    if (postsWithContent.length === 0) {
+      return res.status(404).json({ message: "No posts found for this user." });
+    }
 
     // 3. Return JSON-safe array
     return res.json(postsWithContent);

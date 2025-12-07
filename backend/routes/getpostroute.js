@@ -3,7 +3,7 @@ import { getPostsbyUsers, getAllPosts,getPostById } from "../controllers/getPost
 
 const router=express.Router()
 
-router.post("/getpostofuser",getPostsbyUsers); 
+router.get("/getpostofuser/:user_address",getPostsbyUsers); 
 router.get("/getallpost",getAllPosts);
 router.get("/getpostbyid/:postId",getPostById);
 

@@ -5,6 +5,7 @@ import About from "./Pages/About"
 import AllPosts from "./Pages/AllPost"
 import CreatePost from "./Pages/CreatePost"
 import Post from "./Pages/Post"
+import MyPosts from "./Pages/MyPosts"
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
         <Route path="AllPosts" element={<AllPosts />} />
         <Route path="CreatePost" element={<CreatePost />} />
         <Route path="post/:postId" element={<Post />} />
+        <Route path="MyPosts" element={<MyPosts />} />
+
       </Route>
     </Routes>
     
