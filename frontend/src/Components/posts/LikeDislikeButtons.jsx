@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ethers } from 'ethers';
 import { CONTRACTS } from '@/config/contract';
 
-export default function LikeDislikeButtons({ post, onUpdate }) {
+export default function LikeDislikeButtons({ post }) {
   const [isLiking, setIsLiking] = useState(false);
   const [isDisliking, setIsDisliking] = useState(false);
 
@@ -71,7 +71,7 @@ export default function LikeDislikeButtons({ post, onUpdate }) {
       setDisliked(false);
       setUpvotes((prev)=> prev + 1);
 
-      onUpdate?.();
+
     } catch (err) {
       console.error("Error liking post:", err);
     } finally {
@@ -104,7 +104,7 @@ export default function LikeDislikeButtons({ post, onUpdate }) {
       setLiked(false);
       setDownvotes((prev)=> prev + 1);
 
-      onUpdate?.();
+
     } catch (err) {
       console.error("Error disliking post:", err);
     } finally {

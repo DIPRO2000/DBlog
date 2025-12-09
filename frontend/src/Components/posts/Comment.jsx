@@ -2,7 +2,7 @@ import React, { use, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ThumbsUp, ThumbsDown, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, set } from 'date-fns';
 import { CONTRACTS } from '@/config/contract';
 import { ethers } from 'ethers';
 
@@ -64,10 +64,12 @@ export default function Comment({ comment , postId }) {
     }
 
     setIsLiking(false);
+    setUpvoted(true);
   };
 
   const handleDislike = async () => {
-    if(ReactionCheckerForComments())
+    const alreadyReacted = await ReactionCheckerForComments();
+    if(alreadyReacted)
     {
       alert("You have already reacted to this comment");
       return;
@@ -92,6 +94,7 @@ export default function Comment({ comment , postId }) {
     }
 
     setIsDisliking(false);
+    setDownvoted(true);
   };
 
   useEffect(() => {

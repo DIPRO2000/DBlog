@@ -47,11 +47,6 @@ export default function Post() {
       fetchData();
     }, []);
 
-  const handleUpdate = () => {
-    refetchPost();
-    queryClient.invalidateQueries(['post']);
-  };
-
   const handleCommentAdded = () => {
     refetchComments();
   };
@@ -167,7 +162,7 @@ export default function Post() {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-4 pb-6 border-b border-slate-800/50">
-            <LikeDislikeButtons post={post} onUpdate={handleUpdate} />
+            <LikeDislikeButtons post={post}/>
             <div className="flex items-center gap-2 ml-auto">
               <Button
                 variant="outline"
