@@ -94,9 +94,9 @@ export default function Comment({ comment , postId }) {
     setIsDisliking(false);
   };
 
-  // useEffect(() => {
-  //   console.log("Comment component mounted:", comment);
-  // },[comment]);
+  useEffect(() => {
+    ReactionCheckerForComments();
+  },[comment]);
 
   return (
     <motion.div
@@ -134,7 +134,7 @@ export default function Comment({ comment , postId }) {
               disabled={isLiking}
               className="h-8 px-3 text-slate-400 hover:text-violet-400 hover:bg-violet-500/10"
             >
-              <ThumbsUp className="w-4 h-4 mr-1.5" />
+              <ThumbsUp className={`w-4 h-4 mr-1.5 ${upvoted ? 'fill-purple-500' : ''}`} />
               <span className="text-sm">{likes}</span>
             </Button>
             <Button
@@ -144,7 +144,7 @@ export default function Comment({ comment , postId }) {
               disabled={isDisliking}
               className="h-8 px-3 text-slate-400 hover:text-red-400 hover:bg-red-500/10"
             >
-              <ThumbsDown className="w-4 h-4 mr-1.5" />
+              <ThumbsDown className={`w-4 h-4 mr-1.5 ${downvoted ? 'fill-red-500' : ''}`} />
               <span className="text-sm">{dislikes}</span>
             </Button>
           </div>

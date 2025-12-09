@@ -41,6 +41,9 @@ contract MyblogApp {
     mapping(bytes32 => Comment) private commentById;
     mapping(address => bytes32[]) private userCommentIds;
 
+    //Comment->Post Mapping
+    mapping(bytes32 => bytes32) private CommentToPost;
+
     // Events
 
     event Postcreation(bytes32 indexed postId, string title, string author, uint256 timestamp);
@@ -131,6 +134,9 @@ contract MyblogApp {
 
         // store comment under user index
         userCommentIds[msg.sender].push(commentId);
+
+        //map comment to post
+        CommentToPost[commentId] = _postId;
 
         emit CommentAdded(_postId, commentId, msg.sender, _commenterName, _content, block.timestamp);
     }
@@ -225,5 +231,12 @@ contract MyblogApp {
         }
 
         return result;
+    }
+
+    //Fetch comment to PostId
+
+    function getPostIdfromComment(bytes32 _commentId) public view returns(bytes32) {
+        require(commentById[_commentId].id != bytes32(0), "Comment does not exist");
+        return CommentToPost[_commentId];
     }
 }

@@ -494,10 +494,12 @@ export default function CreatePost() {
                       <UserX className="w-4 h-4 text-slate-400" />
                       <span className="text-sm text-slate-300">Post Anonymously</span>
                     </div>
+                    {/* <span className='border-2 border-white'> */}
                     <Switch
                       checked={isAnonymous}
                       onCheckedChange={setIsAnonymous}
                     />
+                    {/* </span> */}
                   </div>
 
                   {!isAnonymous && (

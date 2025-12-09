@@ -6,6 +6,7 @@ import AllPosts from "./Pages/AllPost"
 import CreatePost from "./Pages/CreatePost"
 import Post from "./Pages/Post"
 import MyPosts from "./Pages/MyPosts"
+import MyComments from "./Pages/MyComments"
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="CreatePost" element={<CreatePost />} />
         <Route path="post/:postId" element={<Post />} />
         <Route path="MyPosts" element={<MyPosts />} />
+        <Route path="MyComments" element={<MyComments />} />
 
       </Route>
     </Routes>

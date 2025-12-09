@@ -483,6 +483,25 @@
 				"inputs": [
 					{
 						"internalType": "bytes32",
+						"name": "_commentId",
+						"type": "bytes32"
+					}
+				],
+				"name": "getPostIdfromComment",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
 						"name": "",
 						"type": "bytes32"
 					},
@@ -635,11 +654,11 @@
 	},
 	"sources": {
 		"contracts/MyblogApp.sol": {
-			"keccak256": "0x80d9cdba1a2adcc89c75724753b407db460648c23b10d81fd998d362f5681201",
+			"keccak256": "0x15a53195521838d30eeea30f80553b5baed71303bab550bd5d82470af33975fb",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://84d3f8450782d4757baa89c8d4fd5bae6d385eb76fee75caf0077a9c3bf70b10",
-				"dweb:/ipfs/Qmcj4rHvyeut7hMRpk6yyz5H2XkTAgJepgY1SoQ2EHvcQk"
+				"bzz-raw://c5411db059e5ce5cf970d78cf1996ca2b863124ca2524a78f1c432f89082e4da",
+				"dweb:/ipfs/QmNiGTfBF8HdE8uAojuKmXY51dUyUoygCmqqn9zUzBt2Nv"
 			]
 		}
 	},

@@ -54,6 +54,7 @@ export default function CommentSection({ postId, onCommentAdded }) {
         const response =await fetch(`${import.meta.env.VITE_Backend_Url}/api/comments/${postId}`);
         const data = await response.json();
         setComments(data.result);
+        console.log("Fetched comments:", data.result);
       } 
       catch (error) {
         console.error("Error fetching comments:", error);
@@ -123,7 +124,7 @@ export default function CommentSection({ postId, onCommentAdded }) {
             </motion.div>
           ) : (
             comments.map((comment) => (
-              <Comment key={comment.id} comment={comment} postId={postId} />
+              <Comment key={comment.commentId} comment={comment} postId={postId} />
             ))
           )}
         </AnimatePresence>
