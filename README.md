@@ -45,17 +45,17 @@ The project combines **MERN**, **Vite**, **Truffle**, **IPFS**, and **Ethereum s
 
 ## 📁 Folder Structure
 
-DecentBlog/
-│── frontend/
-│ ├── src/
-│ └── components/
-│── backend/
-│ ├── routes/
-│ ├── controllers/
-│ └── models/
-│── contracts/
-│── migrations/
-│── truffle-config.js
+DecentBlog/  
+│── frontend/  
+│ ├── src/  
+│ └── components/  
+│── backend/  
+│ ├── routes/  
+│ ├── controllers/  
+│ └── models/  
+│── contracts/  
+│── migrations/  
+│── truffle-config.js  
 
 
 ---
