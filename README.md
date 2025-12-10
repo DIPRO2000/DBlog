@@ -90,7 +90,7 @@ After deployment:Copy the contract address from the migration output
 
 Paste it into:
 
-frontend/.env → VITE_MyBlogApp_ADDRESS
+frontend/.env → VITE_MyBlogApp_ADDRESS  
 backend/.env → Contract_Address
 
 
