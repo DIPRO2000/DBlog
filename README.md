@@ -82,27 +82,18 @@ Run Ganache (if local):
 
 GUI: open Ganache app
 
-CLI:
+CLI:ganache-cli
 
-ganache-cli
+Deploy to local Ganache:truffle migrate --reset
 
-
-Deploy to local Ganache:
-
-truffle migrate --reset
-
-
-After deployment:
-
-Copy the contract address from the migration output
+After deployment:Copy the contract address from the migration output
 
 Paste it into:
 
 frontend/.env → VITE_MyBlogApp_ADDRESS
-
 backend/.env → Contract_Address
 
-▶️ Running the Project Locally
+▶️ 𝐑𝐮𝐧𝐧𝐢𝐧𝐠 𝐭𝐡𝐞 𝐏𝐫𝐨𝐣𝐞𝐜𝐭 𝐋𝐨𝐜𝐚𝐥𝐥𝐲
 1. Clone the repo
 git clone https://github.com/your-username/DecentBlog.git
 cd DecentBlog
@@ -112,10 +103,7 @@ cd backend
 npm install
 npm start
 
-
-Backend will run on:
-
-http://localhost:5000
+Backend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:𝟑𝟎𝟎𝟎
 
 3. Frontend Setup
 cd frontend
@@ -123,33 +111,30 @@ npm install
 npm run dev
 
 
-Frontend will run on:
+Frontend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:𝟓𝟏𝟕𝟑
 
-http://localhost:5173
+🔗 𝐇𝐨𝐰 𝐀𝐥𝐥 𝐏𝐚𝐫𝐭𝐬 𝐖𝐨𝐫𝐤 𝐓𝐨𝐠𝐞𝐭𝐡𝐞𝐫
+| Component      | Purpose                                         |
+| -------------- | ----------------------------------------------- |
+| Smart Contract | Stores comments, reactions, IDs                 |
+| IPFS           | Stores post content & images                    |
+| Backend        | Handles IPFS uploads + metadata                 |
+| Frontend       | UI + interacting with smart contract via Ethers |
 
-🔗 How All Parts Work Together
-Component	Purpose
-Smart Contract	Stores comments, reactions, IDs
-IPFS	Stores post content & images
-Backend	Handles IPFS uploads + metadata
-Frontend	UI + interacting with smart contract via Ethers
-🧪 Local Development Flow
 
-Start Ganache
+🧪 𝐋𝐨𝐜𝐚𝐥 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐦𝐞𝐧𝐭 𝐅𝐥𝐨𝐰
 
-Deploy contract using Truffle
+𝟏.Start Ganache
+𝟐.Deploy contract using Truffle
+𝟑.Paste deployed address into env files
+𝟒.Start backend
+𝟓.Start frontend
+𝟔.Connect MetaMask to local RPC
+𝟕.Interact with the app
 
-Paste deployed address into env files
-
-Start backend
-
-Start frontend
-
-Connect MetaMask to local RPC
-
-Interact with the app
-
-🤝 Contributing
-
+🤝 𝐂𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐢𝐧𝐠
 Open to pull requests.
 Create an issue for new features or bug reports.
+
+📄 𝐋𝐢𝐜𝐞𝐧𝐬𝐞
+MIT License.
