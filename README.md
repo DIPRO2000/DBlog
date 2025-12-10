@@ -76,7 +76,7 @@ VITE_IPFS_GATEWAY=<your_ipfs_gateway>
 ## 🧩 Smart Contracts (Truffle)
 
 Compile:
-```bash
+
 truffle compile
 Run Ganache (if local):
 
