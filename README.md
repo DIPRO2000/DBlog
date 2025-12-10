@@ -110,7 +110,6 @@ cd frontend
 npm install
 npm run dev
 
-
 Frontend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:𝟓𝟏𝟕𝟑
 
 🔗 𝐇𝐨𝐰 𝐀𝐥𝐥 𝐏𝐚𝐫𝐭𝐬 𝐖𝐨𝐫𝐤 𝐓𝐨𝐠𝐞𝐭𝐡𝐞𝐫
@@ -120,7 +119,6 @@ Frontend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:�
 | IPFS           | Stores post content & images                    |
 | Backend        | Handles IPFS uploads + metadata                 |
 | Frontend       | UI + interacting with smart contract via Ethers |
-
 
 🧪 𝐋𝐨𝐜𝐚𝐥 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐦𝐞𝐧𝐭 𝐅𝐥𝐨𝐰
 
