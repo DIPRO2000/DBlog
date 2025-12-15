@@ -203,7 +203,7 @@ export default function About() {
             <p className="text-slate-400 mb-8 max-w-xl mx-auto">
               Connect your wallet and start writing on a platform that truly respects your voice.
             </p>
-            <Link to={('AllPosts')}>
+            <Link to={('/AllPosts')}>
               <Button
                 size="lg"
                 className="rounded-xl px-8 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-lg group"

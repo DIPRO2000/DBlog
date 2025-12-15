@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { provider } from "../config/ethers.js";
 import {createRequire} from "module";
 const require = createRequire(import.meta.url);
-const MyBlogAbi= require("../../blockchain/build/contracts/MyblogApp.json");
+const MyBlogAbi= require("../blockchain/contracts/MyblogApp.json");
 import dotenv from "dotenv";
 
 dotenv.config();

@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import MyBlogApp from "../../../blockchain/build/contracts/MyblogApp.json" with { type: "json" };
+import MyBlogApp from "../blockchain/contracts/MyblogApp.json" with { type: "json" };
 
 export const RPC_URL = import.meta.env.VITE_RPC_URL; // e.g. Alchemy, Infura, or local 
 export const provider = new ethers.JsonRpcProvider(RPC_URL);

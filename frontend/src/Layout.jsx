@@ -1,8 +1,10 @@
-import { Outlet } from "react-router-dom"
+import { Outlet,useLocation } from "react-router-dom"
+import { useEffect } from "react"
 import Navbar from "./Components/common/Navbar";
 import Footer from "./Components/common/Footer";
 
 export default function Layout() {
+  
   return (
     <>
       <div className="min-h-screen bg-slate-950 text-white">

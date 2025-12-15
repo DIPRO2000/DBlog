@@ -6,10 +6,10 @@ import { Github, Twitter, MessageCircle, Globe, FileText } from 'lucide-react';
 
 export default function Footer() {
   const socialLinks = [
-    { icon: Twitter, href: '#', label: 'Twitter' },
-    { icon: Github, href: '#', label: 'GitHub' },
-    { icon: MessageCircle, href: '#', label: 'Discord' },
-    { icon: Globe, href: '#', label: 'Website' },
+    { icon: Twitter, href: '', label: 'Twitter' },
+    { icon: Github, href: '', label: 'GitHub' },
+    { icon: MessageCircle, href: '', label: 'Discord' },
+    { icon: Globe, href: '', label: 'Website' },
   ];
 
   const footerLinks = [

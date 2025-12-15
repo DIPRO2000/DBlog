@@ -31826,12 +31826,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xB4877f0b2C3ED7e2Ac09347ec806b965527Ebd86",
-      "transactionHash": "0xee844d0e78159ccaae034ce4e7e870a287e33fc359ce679e2377ebef8b3142e6"
+      "address": "0x17b90766f60C1Ac38EB9d698999B4e80F34dbe47",
+      "transactionHash": "0xffcd5ec714f77cdae92fa80e8c35fadd1d9087a0dfa853f6bf1a41ae73e27133"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-12-15T15:17:46.775Z",
+  "updatedAt": "2025-12-09T15:57:08.702Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

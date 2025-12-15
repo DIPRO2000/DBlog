@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route,useLocation } from "react-router-dom"
+import { useEffect } from "react"
 import Layout from "./Layout"
 import Home from "./Pages/Home"
 import About from "./Pages/About"
@@ -9,6 +10,16 @@ import MyPosts from "./Pages/MyPosts"
 import MyComments from "./Pages/MyComments"
 
 function App() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    
+
+    const scrollToTop = () => {
+      window.scrollTo(0, 0);
+    };
+    scrollToTop();
+  },[pathname]);
+
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
