@@ -93,6 +93,7 @@ Paste it into:
 frontend/.env → VITE_MyBlogApp_ADDRESS  
 backend/.env → Contract_Address
 
+---
 
 ▶️ 𝐑𝐮𝐧𝐧𝐢𝐧𝐠 𝐭𝐡𝐞 𝐏𝐫𝐨𝐣𝐞𝐜𝐭 𝐋𝐨𝐜𝐚𝐥𝐥𝐲
 1. Clone the repo:  
@@ -113,6 +114,7 @@ npm run dev
 
 Frontend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:𝟓𝟏𝟕𝟑
 
+---
 
  🔗 𝐇𝐨𝐰 𝐀𝐥𝐥 𝐏𝐚𝐫𝐭𝐬 𝐖𝐨𝐫𝐤 𝐓𝐨𝐠𝐞𝐭𝐡𝐞𝐫
 | Component      | Purpose                                         |
@@ -122,6 +124,7 @@ Frontend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:�
 | Backend        | Handles IPFS uploads + metadata                 |
 | Frontend       | UI + interacting with smart contract via Ethers |
 
+---
 
 🧪 𝐋𝐨𝐜𝐚𝐥 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐦𝐞𝐧𝐭 𝐅𝐥𝐨𝐰
 
@@ -133,11 +136,11 @@ Frontend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:�
 𝟔.Connect MetaMask to local RPC  
 𝟕.Interact with the app  
 
+---
 
 🤝 𝐂𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐢𝐧𝐠  
 Open to pull requests.  
 Create an issue for new features or bug reports.  
-
 
 📄 𝐋𝐢𝐜𝐞𝐧𝐬𝐞  
 MIT License.
