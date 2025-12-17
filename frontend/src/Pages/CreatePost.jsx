@@ -18,16 +18,16 @@ import {
   Send,
   AlertCircle
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Textarea } from '@/Components/ui/textarea';
+import { Label } from '@/Components/ui/label';
+import { Switch } from '@/Components/ui/switch';
+import { Badge } from '@/Components/ui/badge';
+import { Card } from '@/Components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import ReactMarkdown from 'react-markdown';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -404,7 +404,7 @@ export default function CreatePost() {
                       {formData.content ? (
                         <div className="prose prose-invert prose-sm max-w-none">
                           <ReactMarkdown
-                            components={{
+                            Components={{
                               h1: ({ children }) => <h1 className="text-2xl font-bold text-white mt-4 mb-2">{children}</h1>,
                               h2: ({ children }) => <h2 className="text-xl font-bold text-white mt-3 mb-2">{children}</h2>,
                               h3: ({ children }) => <h3 className="text-lg font-bold text-white mt-2 mb-1">{children}</h3>,

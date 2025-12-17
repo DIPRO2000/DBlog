@@ -5,7 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/Components/ui/dropdown-menu';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Wallet, Home, FileText, Info, User, MessageCircle, ChevronDown } from 'lucide-react';
 import { Button } from '../../Components/ui/Button';

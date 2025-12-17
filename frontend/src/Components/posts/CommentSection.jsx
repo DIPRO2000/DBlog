@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Send, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Textarea } from '@/Components/ui/textarea';
 // import { base44 } from '@/api/base44Client';
 import Comment from './Comment';
 import { CONTRACTS } from '@/config/contract';

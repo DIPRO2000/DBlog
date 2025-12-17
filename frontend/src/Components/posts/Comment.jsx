@@ -1,7 +1,7 @@
 import React, { use, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ThumbsUp, ThumbsDown, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/Components/ui/button';
 import { formatDistanceToNow, set } from 'date-fns';
 import { CONTRACTS } from '@/config/contract';
 import { ethers } from 'ethers';

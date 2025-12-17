@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Shield, Globe, Zap, Users, Lock, Infinity, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 // import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/Components/ui/button';
 
 export default function About() {
   const features = [

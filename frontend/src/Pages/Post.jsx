@@ -3,12 +3,12 @@ import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, Calendar, User, Wallet, ArrowLeft, Share2, Bookmark } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/Components/ui/button';
+import { Badge } from '@/Components/ui/badge';
 import { format } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
-import LikeDislikeButtons from '@/components/posts/LikeDislikeButtons';
-import CommentSection from '@/components/posts/CommentSection';
+import LikeDislikeButtons from '@/Components/posts/LikeDislikeButtons';
+import CommentSection from '@/Components/posts/CommentSection';
 
 export default function Post() {
   const { postId } = useParams();
@@ -192,7 +192,7 @@ export default function Post() {
           className="prose prose-invert prose-lg max-w-none mb-12"
         >
           <ReactMarkdown
-            components={{
+            Components={{
               h1: ({ children }) => (
                 <h1 className="text-3xl font-bold text-white mt-8 mb-4">{children}</h1>
               ),

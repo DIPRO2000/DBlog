@@ -2,7 +2,7 @@ import React, {  useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ThumbsUp, ThumbsDown, MessageCircle, ArrowRight, Calendar, User } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/Components/ui/badge';
 import { format } from 'date-fns';
 import { CONTRACTS } from '@/config/contract';
 import { ethers } from 'ethers';

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, FileText, Plus, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import PostCard from '@/components/posts/PostCard';
-import { Button } from '@/components/ui/button';
+import PostCard from '@/Components/posts/PostCard';
+import { Button } from '@/Components/ui/button';
 import { ethers } from 'ethers';
 
 export default function MyPosts() {

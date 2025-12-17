@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, TrendingUp } from 'lucide-react';
-import AnimatedHero from '@/components/home/AnimatedHero';
-import PostCard from '@/components/posts/PostCard';
+import AnimatedHero from '@/Components/home/AnimatedHero';
+import PostCard from '@/Components/posts/PostCard';
 
 export default function Home() {
   const [posts, setPosts] = useState([]);

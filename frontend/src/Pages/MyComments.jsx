@@ -9,9 +9,9 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/Components/ui/button';
+import { Card } from '@/Components/ui/card';
+import { Badge } from '@/Components/ui/badge';
 import { ethers } from 'ethers';
 import { CONTRACTS } from '@/config/contract';
 

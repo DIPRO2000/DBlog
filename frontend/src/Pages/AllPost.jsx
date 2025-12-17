@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Search, Filter, Grid3X3, List } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import PostCard from '@/components/posts/PostCard';
+import { Input } from '@/Components/ui/input';
+import { Button } from '@/Components/ui/button';
+import { Badge } from '@/Components/ui/badge';
+import PostCard from '@/Components/posts/PostCard';
 
 export default function AllPosts() {
   const [searchQuery, setSearchQuery] = useState('');
