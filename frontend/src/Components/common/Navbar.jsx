@@ -8,7 +8,7 @@ import {
 } from '@/Components/ui/dropdown-menu';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Wallet, Home, FileText, Info, User, MessageCircle, ChevronDown } from 'lucide-react';
-import { Button } from '../../Components/ui/Button';
+import { Button } from '../../Components/ui/button';
 import { ethers } from 'ethers';
 
 export default function Navbar() {
