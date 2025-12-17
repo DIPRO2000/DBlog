@@ -53,10 +53,10 @@ DecentBlog/
 │ ├── routes/  
 │ ├── controllers/  
 │ └── models/  
-|──blockchain/  
-│ |── contracts/  
-│ |── migrations/  
-│ |── truffle-config.js  
+│──blockchain/  
+│ ├── contracts/  
+│ ├── migrations/  
+│ └── truffle-config.js  
 
 
 ---
