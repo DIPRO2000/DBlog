@@ -404,7 +404,7 @@ export default function CreatePost() {
                       {formData.content ? (
                         <div className="prose prose-invert prose-sm max-w-none">
                           <ReactMarkdown
-                            Components={{
+                            components={{
                               h1: ({ children }) => <h1 className="text-2xl font-bold text-white mt-4 mb-2">{children}</h1>,
                               h2: ({ children }) => <h2 className="text-xl font-bold text-white mt-3 mb-2">{children}</h2>,
                               h3: ({ children }) => <h3 className="text-lg font-bold text-white mt-2 mb-1">{children}</h3>,
