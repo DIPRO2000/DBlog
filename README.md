@@ -76,7 +76,8 @@ PORT=3000
 RPC_Provider=<rpc_url>  
 CONTRACT_ADDRESS=<deployed_contract_address>  
 
-# Use for Pinata alike Services  
+**Use for Pinata alike Services**  
+
 IPFS_GATEWAY=<your_ipfs_gateway>  
 PINATA_API_KEY=<pinata_key>  
 PINATA_API_SECRET=<pinata_api_secret>  
