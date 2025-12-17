@@ -63,10 +63,10 @@ DecentBlog/
 ## ⚙️ Environment Variables
 
 ### **Frontend `.env`**
- VITE_Backend_Url=<your_backend_url> 
- VITE_MyBlogApp_ADDRESS=<deployed_contract_address> 
- VITE_RPC_URL=<rpc_url> 
- VITE_IPFS_GATEWAY=<your_ipfs_gateway> 
+VITE_Backend_Url=<your_backend_url>  
+VITE_MyBlogApp_ADDRESS=<deployed_contract_address>  
+VITE_RPC_URL=<rpc_url>  
+VITE_IPFS_GATEWAY=<your_ipfs_gateway>  
 
 
 ### **Backend `.env`**
@@ -77,7 +77,7 @@ DecentBlog/
 
 Compile:
 
-truffle compile
+truffle compile  
 Run Ganache (if local):
 
 GUI: open Ganache app
@@ -95,21 +95,21 @@ backend/.env → Contract_Address
 
 
 ▶️ 𝐑𝐮𝐧𝐧𝐢𝐧𝐠 𝐭𝐡𝐞 𝐏𝐫𝐨𝐣𝐞𝐜𝐭 𝐋𝐨𝐜𝐚𝐥𝐥𝐲
-1. Clone the repo: 
- git clone https://github.com/your-username/DecentBlog.git 
- cd DecentBlog 
+1. Clone the repo:  
+git clone https://github.com/your-username/DecentBlog.git  
+cd DecentBlog  
 
-2. Backend Setup: 
- cd backend 
- npm install 
- npm start 
+2. Backend Setup:  
+cd backend  
+npm install  
+npm start  
 
 Backend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:𝟑𝟎𝟎𝟎
 
-3. Frontend Setup: 
- cd frontend 
- npm install 
- npm run dev 
+3. Frontend Setup:  
+cd frontend  
+npm install  
+npm run dev  
 
 Frontend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:𝟓𝟏𝟕𝟑
 
@@ -125,19 +125,19 @@ Frontend will run on:𝐡𝐭𝐭𝐩://𝐥𝐨𝐜𝐚𝐥𝐡𝐨𝐬𝐭:�
 
 🧪 𝐋𝐨𝐜𝐚𝐥 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐦𝐞𝐧𝐭 𝐅𝐥𝐨𝐰
 
- 𝟏.Start Ganache 
- 𝟐.Deploy contract using Truffle 
- 𝟑.Paste deployed address into env files 
- 𝟒.Start backend 
- 𝟓.Start frontend 
- 𝟔.Connect MetaMask to local RPC 
- 𝟕.Interact with the app 
+𝟏.Start Ganache  
+𝟐.Deploy contract using Truffle  
+𝟑.Paste deployed address into env files  
+𝟒.Start backend  
+𝟓.Start frontend  
+𝟔.Connect MetaMask to local RPC  
+𝟕.Interact with the app  
 
 
-🤝 𝐂𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐢𝐧𝐠 
- Open to pull requests. 
- Create an issue for new features or bug reports. 
+🤝 𝐂𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐢𝐧𝐠  
+Open to pull requests.  
+Create an issue for new features or bug reports.  
 
 
-📄 𝐋𝐢𝐜𝐞𝐧𝐬𝐞 
- MIT License.
+📄 𝐋𝐢𝐜𝐞𝐧𝐬𝐞  
+MIT License.
