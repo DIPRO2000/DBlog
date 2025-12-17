@@ -192,7 +192,7 @@ export default function Post() {
           className="prose prose-invert prose-lg max-w-none mb-12"
         >
           <ReactMarkdown
-            Components={{
+            components={{
               h1: ({ children }) => (
                 <h1 className="text-3xl font-bold text-white mt-8 mb-4">{children}</h1>
               ),
